@@ -51,6 +51,10 @@ func (p *Parser) FetchHTML() (buffer io.Reader, err error) {
 	client := &http.Client{Timeout: time.Second * 10}
 
 	req, err := http.NewRequest("GET", u, nil)
+	if err != nil {
+		fmt.Printf("%s", err)
+		return nil, err
+	}
 	req.Header.Add("Accept", `text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8`)
 	req.Header.Add("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11`)
 	r, err := client.Do(req)
