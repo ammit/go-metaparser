@@ -106,7 +106,8 @@ func (p *Parser) ParseMeta(attrs map[string]string) {
 	case "og:image", "og:image:url", "og:image:secure_url", "og:image:type", "og:image:width", "og:image:height", "og:image:alt":
 		p.parseImageMeta(attrs)
 	// opengraph:video
-	case "og:video", "og:video:url", "og:video:secure_url", "og:video:type", "og:video:width", "og:video:height":
+	case "og:video", "og:video:url", "og:video:secure_url", "og:video:type", "og:video:width", "og:video:height",
+		"video:actor", "video:actor:role", "video:director", "video:writer", "video:duration", "video:release_date", "video:tag", "video:series":
 		p.parseVideoMeta(attrs)
 	// opengraph:audio
 	case "og:audio", "og:audio:secure_url", "og:audio:type":

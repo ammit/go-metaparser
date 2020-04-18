@@ -47,6 +47,19 @@ const html = `
 	<meta property="og:video:width" content="400" />
 	<meta property="og:video:height" content="300" />
 
+	<!-- (new) video:actor/movie/episod -->
+	<meta property="video:actor" content="http://open.spotify.com/artist/1dfeR4HaWDbWqFHLkxsg1d" />
+	<meta property="video:actor:role" content="xyz">
+	<meta property="video:actor" content="http://open.spotify.com/artist/1dfeR4HaWDbWqFHLkxsg1d" />
+	<meta property="video:actor:role" content="xyz">
+	<meta property="video:director" content="http://open.spotify.com/artist/1dfeR4HaWDbWqFHLkxsg1d" />
+	<meta property="video:writer" content="http://open.spotify.com/artist/1dfeR4HaWDbWqFHLkxsg1d" />
+	<meta property="video:duration" content="1236">
+	<meta property="video:release_date" content="1236">
+	<meta property="video:tag" content="a">
+	<meta property="video:tag" content="b">
+	<meta property="video:series" content="http://open.spotify.com/series/1dfeR4HaWDbWqFHLkxsg1d">
+
 	<!-- og:audio -->
 	<meta property="og:audio" content="http://example.com/sound.mp3" />
 	<meta property="og:audio:secure_url" content="https://secure.example.com/sound.mp3" />
@@ -160,6 +173,46 @@ func TestParserParseHTML(t *testing.T) {
 		if p.Videos[0].Height == 0 {
 			t.Error("video height parsed incorrectly")
 		}
+
+		// video:
+		if len(p.Videos[0].Actors) == 0 {
+			t.Error("video actors parsed incorrectly")
+		} else {
+			if len(p.Videos[0].Actors[0].URL) == 0 {
+				t.Error("video actors url parsed incorrectly")
+			}
+			if len(p.Videos[0].Actors[0].Role) == 0 {
+				t.Error("video actors role parsed incorrectly")
+			}
+		}
+
+		if len(p.Videos[0].Director) == 0 {
+			t.Error("video director parsed incorrectly")
+		}
+
+		if len(p.Videos[0].Writer) == 0 {
+			t.Error("video writer parsed incorrectly")
+		}
+
+		if p.Videos[0].Duration == 0 {
+			t.Error("video duration parsed incorrectly")
+		}
+
+		if len(p.Videos[0].ReleaseDate) == 0 {
+			t.Error("video release_date parsed incorrectly")
+		}
+
+		if len(p.Videos[0].Series) == 0 {
+			t.Error("video series parsed incorrectly")
+		}
+
+		if len(p.Videos[0].Tags) == 0 {
+			t.Error("video tags parsed incorrectly")
+		} else {
+			if len(p.Videos[0].Tags[0]) == 0 {
+				t.Error("video tags tag parsed incorrectly")
+			}
+		}
 	}
 
 	// og:audio
@@ -184,7 +237,6 @@ func TestParserParseHTML(t *testing.T) {
 		t.Error("musicians parsed incorrectly")
 	}
 
-	// music.album
 	if len(p.Music.Album.URL) == 0 {
 		t.Error("Music Album URL parsed incorrectly")
 	}
