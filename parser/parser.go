@@ -30,8 +30,8 @@ type Parser struct {
 	// New
 	Music   Music   `json:"music"`
 	Article Article `json:"article"`
-	Book    Book    `json:"music"`
-	Profile Profile `json:"article"`
+	Book    Book    `json:"book"`
+	Profile Profile `json:"profile"`
 }
 
 // New ...

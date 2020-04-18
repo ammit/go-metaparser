@@ -16,9 +16,9 @@ type Video struct {
 	Type        string   `json:"type"`
 	Width       int64    `json:"width"`
 	Height      int64    `json:"height"`
-	Actors      []*actor `json:"string"`
+	Actors      []*actor `json:"actors"`
 	Director    string   `json:"director"`
-	Writer      string   `json:"string"`
+	Writer      string   `json:"writer"`
 	Duration    int64    `json:"duration"`
 	ReleaseDate string   `json:"release_date"`
 	Series      string   `json:"series"`
