@@ -8,9 +8,10 @@ import (
 )
 
 func main() {
-	og := og.New("ogp.me")
+	og := og.New()
 
-	b, err := og.FetchHTML()
+	b, err := og.FetchHTML("http://ogp.me")
+
 	if err != nil {
 		log.Fatalf("%-v", err)
 	}

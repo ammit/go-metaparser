@@ -2,7 +2,6 @@ package parser
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -10,6 +9,10 @@ import (
 
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
+)
+
+const (
+	httpClientTimeoutSeconds = 30
 )
 
 // Parser ...
@@ -35,46 +38,37 @@ type Parser struct {
 }
 
 // New ...
-func New(url string) *Parser {
-	return &Parser{
-		URL: url,
-	}
+func New() *Parser {
+	return &Parser{}
 }
 
 // FetchHTML returns buffer
-func (p *Parser) FetchHTML() (buffer io.Reader, err error) {
-	u := strings.TrimSpace(p.URL)
-	if !strings.HasPrefix(u, "http:") && !strings.HasPrefix(u, "https:") {
-		u = "http://" + u
+func (p *Parser) FetchHTML(target string) (io.ReadCloser, error) {
+	target = strings.TrimSpace(target)
+
+	return fetch(target)
+}
+
+func fetch(target string) (io.ReadCloser, error) {
+	var netClient = &http.Client{
+		Timeout: time.Second * httpClientTimeoutSeconds,
 	}
-
-	client := &http.Client{Timeout: time.Second * 10}
-
-	req, err := http.NewRequest("GET", u, nil)
+	resp, err := netClient.Get(target)
 	if err != nil {
-		fmt.Printf("%s", err)
-		return nil, err
-	}
-	req.Header.Add("Accept", `text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8`)
-	req.Header.Add("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11`)
-	r, err := client.Do(req)
-
-	if err != nil {
-		fmt.Printf("%s", err)
 		return nil, err
 	}
 
-	if !(r.StatusCode >= 200 && r.StatusCode < 300) {
+	if !(resp.StatusCode >= 200 && resp.StatusCode < 300) {
 		return nil, errors.New("page not found")
 	}
 
-	rd := io.Reader(r.Body)
-
-	return rd, err
+	return resp.Body, nil
 }
 
 // ParseHTML parses given html
-func (p *Parser) ParseHTML(buffer io.Reader) error {
+func (p *Parser) ParseHTML(buffer io.ReadCloser) error {
+	defer buffer.Close()
+
 	z := html.NewTokenizer(buffer)
 	for {
 		token := z.Next()
