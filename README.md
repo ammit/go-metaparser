@@ -1,10 +1,10 @@
 # go-metaparser
 
-> Lightweight metadata scrapper aimed at scrapping favicon links from web-pages
+> Lightweight metadata scrapper aimed at scrapping Open Graph Metadata from web-pages
 
 ![](https://repository-images.githubusercontent.com/256327777/b9713100-8055-11ea-8d30-ca9ecc6e881b)
 
-With go-metaparser you can easily extract structured meta-data from websites. Supports extracting favicons, apple touch icons from any webpage.
+With go-metaparser you can easily extract structured meta-data from websites. Supports extracting Open Graph Metadata from any webpage.
 
 ## Installation
 
