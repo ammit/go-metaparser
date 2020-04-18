@@ -1,45 +1,31 @@
 package parser
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
-	"net/url"
 	"strings"
+	"time"
 
-	"github.com/PuerkitoBio/goquery"
-	"golang.org/x/net/html/charset"
-)
-
-const (
-	maxResponseBodySize = 10485760 // 10MB
-)
-
-var (
-	cssSelectors = strings.Join([]string{
-		"link[rel='icon']",
-		"link[rel='shortcut icon']",
-		"link[rel='apple-touch-icon']",
-		"link[rel='apple-touch-icon-precomposed']",
-		"link[rel='ICON']",
-		"link[rel='SHORTCUT ICON']",
-		"link[rel='APPLE-TOUCH-ICON']",
-		"link[rel='APPLE-TOUCH-ICON-PRECOMPOSED']",
-	}, ", ")
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
 )
 
 // Parser ...
 type Parser struct {
-	URL string
-}
+	Title            string   `json:"title"`
+	Type             string   `json:"type"`
+	Description      string   `json:"description"`
+	Determiner       string   `json:"determiner"`
+	URL              string   `json:"url"`
+	Locale           string   `json:"locale"`
+	LocalesAlternate []string `json:"locales_alternate"`
+	SiteName         string   `json:"site_name"`
 
-// ParsedData ...
-type ParsedData struct {
-	BaseURL *url.URL
-	Icons   []string
+	Images []*Image `json:"images"`
+	Videos []*Video `json:"videos"`
+	Audios []*Audio `json:"audios"`
 }
 
 // New ...
@@ -49,129 +35,79 @@ func New(url string) *Parser {
 	}
 }
 
-// Fetch ...
-func (p *Parser) Fetch() (*ParsedData, error) {
+// FetchHTML returns buffer
+func (p *Parser) FetchHTML() (buffer io.Reader, err error) {
 	u := strings.TrimSpace(p.URL)
 	if !strings.HasPrefix(u, "http:") && !strings.HasPrefix(u, "https:") {
 		u = "http://" + u
 	}
 
-	response, err := http.Get(u)
+	client := &http.Client{Timeout: time.Second * 10}
+
+	req, err := http.NewRequest("GET", u, nil)
+	req.Header.Add("Accept", `text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8`)
+	req.Header.Add("User-Agent", `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_5) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11`)
+	r, err := client.Do(req)
 
 	if err != nil {
 		fmt.Printf("%s", err)
 		return nil, err
 	}
 
-	if !(response.StatusCode >= 200 && response.StatusCode < 300) {
+	if !(r.StatusCode >= 200 && r.StatusCode < 300) {
 		return nil, errors.New("page not found")
 	}
 
-	html, siteURL, err := getHTML(response)
-	if err != nil {
-		fmt.Printf("%s", err)
-		return nil, err
-	}
+	rd := io.Reader(r.Body)
 
-	doc, err := goquery.NewDocumentFromReader(bytes.NewReader(html))
-	if err != nil {
-		fmt.Printf("%s", err)
-		return nil, err
-	}
-
-	baseURL := extractBaseURL(siteURL, doc)
-	icons := extractIcons(baseURL, doc)
-
-	pd := ParsedData{
-		BaseURL: baseURL,
-		Icons:   icons,
-	}
-
-	return &pd, nil
+	return rd, err
 }
 
-func getHTML(r *http.Response) ([]byte, *url.URL, error) {
-	limitReader := io.LimitReader(r.Body, maxResponseBodySize)
-	b, err := ioutil.ReadAll(limitReader)
-	r.Body.Close()
-
-	if len(b) >= maxResponseBodySize {
-		return nil, nil, errors.New("body too large")
-	}
-
-	if err != nil {
-		fmt.Printf("%s", err)
-		return nil, nil, err
-	}
-
-	if len(b) == 0 {
-		return nil, nil, errors.New("empty response")
-	}
-
-	reader := bytes.NewReader(b)
-	contentType := r.Header.Get("Content-Type")
-	utf8reader, err := charset.NewReader(reader, contentType)
-	if err != nil {
-		return nil, nil, err
-	}
-	utf8bytes, err := ioutil.ReadAll(utf8reader)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return utf8bytes, r.Request.URL, nil
-}
-
-func absURL(baseURL *url.URL, path string) (string, error) {
-	u, err := url.Parse(path)
-	if err != nil {
-		return "", err
-	}
-
-	u.Scheme = baseURL.Scheme
-	if u.Scheme == "" {
-		u.Scheme = "http"
-	}
-
-	if u.Host == "" {
-		u.Host = baseURL.Host
-	}
-	return baseURL.ResolveReference(u).String(), nil
-}
-
-func extractBaseURL(siteURL *url.URL, doc *goquery.Document) *url.URL {
-	href := ""
-	doc.Find("head base[href]").First().Each(func(i int, s *goquery.Selection) {
-		href, _ = s.Attr("href")
-	})
-
-	if href != "" {
-		baseTagURL, err := url.Parse(href)
-		if err != nil {
-			return siteURL
-		}
-		return baseTagURL
-	}
-
-	return siteURL
-}
-
-func extractIcons(baseURL *url.URL, doc *goquery.Document) []string {
-	var hits []string
-	doc.Find(cssSelectors).Each(func(i int, s *goquery.Selection) {
-		href, ok := s.Attr("href")
-		if ok && href != "" {
-			var err error
-
-			href, err = absURL(baseURL, href)
-
-			if err != nil {
-				fmt.Printf("%s", err)
-			} else {
-				hits = append(hits, href)
+// ParseHTML parses given html
+func (p *Parser) ParseHTML(buffer io.Reader) error {
+	z := html.NewTokenizer(buffer)
+	for {
+		token := z.Next()
+		switch token {
+		case html.ErrorToken:
+			if z.Err() == io.EOF {
+				return nil
 			}
+			return z.Err()
+		case html.StartTagToken, html.SelfClosingTagToken, html.EndTagToken:
+			name, hasAttr := z.TagName()
+			if atom.Lookup(name) == atom.Body {
+				return nil
+			}
+			if atom.Lookup(name) != atom.Meta || !hasAttr {
+				continue
+			}
+			m := make(map[string]string)
+			var key, val []byte
+			for hasAttr {
+				key, val, hasAttr = z.TagAttr()
+				m[atom.String(key)] = string(val)
+			}
+			p.ParseMeta(m)
 		}
-	})
+	}
+}
 
-	return hits
+// ParseMeta processes meta attributes
+func (p *Parser) ParseMeta(attrs map[string]string) {
+	switch attrs["property"] {
+	// opengraph:basic
+	case "og:title", "og:type", "og:url", "og:description", "og:determiner", "og:locale", "og:locale:alternate", "og:site_name":
+		p.parseBasicMeta(attrs)
+	// opengraph:image
+	case "og:image", "og:image:url", "og:image:secure_url", "og:image:type", "og:image:width", "og:image:height", "og:image:alt":
+		p.parseImageMeta(attrs)
+	// opengraph:video
+	case "og:video", "og:video:url", "og:video:secure_url", "og:video:type", "og:video:width", "og:video:height":
+		p.parseVideoMeta(attrs)
+	// opengraph:audio
+	case "og:audio", "og:audio:secure_url", "og:audio:type":
+		p.parseAudioMeta(attrs)
+
+	}
 }

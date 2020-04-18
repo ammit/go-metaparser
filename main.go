@@ -2,18 +2,23 @@ package main
 
 import (
 	"fmt"
+	"log"
 
-	"github.com/ammit/go-metaparser/parser"
+	og "github.com/ammit/go-metaparser/parser"
 )
 
 func main() {
-	p := parser.New("http://css-tricks.com")
+	og := og.New("ogp.me")
 
-	data, err := p.Fetch()
-
+	b, err := og.FetchHTML()
 	if err != nil {
-		fmt.Printf("Error fetching url %-v", err)
+		log.Fatalf("%-v", err)
 	}
 
-	fmt.Printf("%+v\n", data)
+	err = og.ParseHTML(b)
+	if err != nil {
+		log.Fatalf("%-v", err)
+	}
+
+	fmt.Printf("%+v\n", og)
 }
