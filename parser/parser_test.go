@@ -76,6 +76,17 @@ const html = `
 	<meta property="music:song:disc" content="1">
 	<meta property="music:song:track" content="2">
 	<meta property="music:creator" content="http://open.spotify.com/user/austinhaugen"/>
+
+	<!-- article: -->
+	<meta property="article:published_time" content="test" />
+	<meta property="article:modified_time" content="test" />
+	<meta property="article:expiration_time" content="test" />
+	<meta property="article:author" content="test" />
+	<meta property="article:author" content="test2" />
+	<meta property="article:section" content="test" />
+	<meta property="article:tag" content="test" />
+	<meta property="article:tag" content="tes2" />
+
 </head>
 <body>
 </body>
@@ -270,6 +281,39 @@ func TestParserParseHTML(t *testing.T) {
 
 		if p.Music.Songs[0].Track == 0 {
 			t.Error("Music song track parsed incorrectly")
+		}
+	}
+
+	// article
+	if len(p.Article.PublishedTime) == 0 {
+		t.Error("article published_time parsed incorrectly")
+	}
+
+	if len(p.Article.ModifiedTime) == 0 {
+		t.Error("article modified_time parsed incorrectly")
+	}
+
+	if len(p.Article.ExpirationTime) == 0 {
+		t.Error("article expiration_time parsed incorrectly")
+	}
+
+	if len(p.Article.Section) == 0 {
+		t.Error("article section parsed incorrectly")
+	}
+
+	if len(p.Article.Tags) == 0 {
+		t.Error("Article tags parsed incorrectly")
+	} else {
+		if len(p.Article.Tags[0]) == 0 {
+			t.Error("Article tags tag parsed incorrectly")
+		}
+	}
+
+	if len(p.Article.Authors) == 0 {
+		t.Error("Article Authors parsed incorrectly")
+	} else {
+		if len(p.Article.Authors[0]) == 0 {
+			t.Error("Article Authors Author parsed incorrectly")
 		}
 	}
 }

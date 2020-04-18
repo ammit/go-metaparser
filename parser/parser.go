@@ -28,7 +28,8 @@ type Parser struct {
 	Audios []*Audio `json:"audios"`
 
 	// New
-	Music Music `json:"music"`
+	Music   Music   `json:"music"`
+	Article Article `json:"article"`
 }
 
 // New ...
@@ -116,5 +117,9 @@ func (p *Parser) ParseMeta(attrs map[string]string) {
 	case "music:musician", "music:album", "music:album:disc", "music:album:track", "music:song",
 		"music:song:disc", "music:song:track", "music:release_date", "music:creator", "music:duration":
 		p.parseMusicMeta(attrs)
+	// article
+	case "article:published_time", "article:modified_time", "article:expiration_time", "article:author",
+		"article:section", "article:tag":
+		p.parseArticleMeta(attrs)
 	}
 }
