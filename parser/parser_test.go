@@ -101,6 +101,30 @@ const html = `
 	<meta property="profile:last_name" content="lastname" />
 	<meta property="profile:username" content="username" />
 	<meta property="profile:gender" content="male" />
+
+	<!-- twitter: -->
+	<meta property="twitter:card" content="test" />
+	<meta property="twitter:site" content="test" />
+	<meta property="twitter:site:id" content="test" />
+	<meta property="twitter:creator" content="test" />
+	<meta property="twitter:creator:id" content="test" />
+	<meta property="twitter:description" content="test" />
+	<meta property="twitter:title" content="test" />
+	<meta property="twitter:image" content="test" />
+	<meta property="twitter:image:alt" content="test" />
+	<meta property="twitter:player" content="test" />
+	<meta property="twitter:player:height" content="10" />
+	<meta property="twitter:player:width" content="10" />
+	<meta property="twitter:player:stream" content="test" />
+	<meta property="twitter:app:name:iphone" content="test" />
+	<meta property="twitter:app:url:iphone" content="test" />
+	<meta property="twitter:app:id:iphone" content="1" />
+	<meta property="twitter:app:name:ipad" content="test" />
+	<meta property="twitter:app:url:ipad" content="test" />
+	<meta property="twitter:app:id:ipad" content="1" />
+	<meta property="twitter:app:name:googleplay" content="test" />
+	<meta property="twitter:app:url:googleplay" content="test" />
+	<meta property="twitter:app:id:googleplay" content="1" />
 </head>
 <body>
 </body>
@@ -372,4 +396,108 @@ func TestParserParseHTML(t *testing.T) {
 	if len(p.Profile.Gender) == 0 {
 		t.Error("profile gender parsed incorrectly")
 	}
+
+	// twitter
+	if len(p.Twitter.Card) == 0 {
+		t.Error("twitter:card parsed incorrectly")
+	}
+
+	if len(p.Twitter.Site) == 0 {
+		t.Error("twitter:site parsed incorrectly")
+	}
+
+	if len(p.Twitter.SiteID) == 0 {
+		t.Error("twitter:site:id parsed incorrectly")
+	}
+
+	if len(p.Twitter.Creator) == 0 {
+		t.Error("twitter:creator parsed incorrectly")
+	}
+
+	if len(p.Twitter.CreatorID) == 0 {
+		t.Error("twitter:creator:id parsed incorrectly")
+	}
+
+	if len(p.Twitter.Description) == 0 {
+		t.Error("twitter:description parsed incorrectly")
+	}
+
+	if len(p.Twitter.Title) == 0 {
+		t.Error("twitter:title parsed incorrectly")
+	}
+
+	if len(p.Twitter.Image) == 0 {
+		t.Error("twitter:image parsed incorrectly")
+	}
+
+	if len(p.Twitter.ImageAlt) == 0 {
+		t.Error("twitter:image:alt parsed incorrectly")
+	}
+
+	if len(p.Twitter.Player.URL) == 0 {
+		t.Error("twitter:player parsed incorrectly")
+	}
+
+	if p.Twitter.Player.Height == 0 {
+		t.Error("twitter:player:height parsed incorrectly")
+	}
+
+	if p.Twitter.Player.Width == 0 {
+		t.Error("twitter:player:width parsed incorrectly")
+	}
+
+	if len(p.Twitter.Player.Stream) == 0 {
+		t.Error("twitter:player:stream parsed incorrectly")
+	}
+
+	// log.Fatalf("%+v", p.Twitter.Apps)
+
+	if len(p.Twitter.Apps[0].Name) == 0 {
+		t.Error("twitter:app:name:iphone parsed incorrectly")
+	}
+
+	if len(p.Twitter.Apps[0].URL) == 0 {
+		t.Error("twitter:app:url:iphone parsed incorrectly")
+	}
+
+	if p.Twitter.Apps[0].ID == 0 {
+		t.Error("twitter:app:id:iphone parsed incorrectly")
+	}
+
+	if len(p.Twitter.Apps[0].Type) == 0 {
+		t.Error("twitter:app:type:iphone parsed incorrectly")
+	}
+
+	if len(p.Twitter.Apps[0].Name) == 0 {
+		t.Error("twitter:app:name:ipad parsed incorrectly")
+	}
+
+	if len(p.Twitter.Apps[0].URL) == 0 {
+		t.Error("twitter:app:url:ipad parsed incorrectly")
+	}
+
+	if p.Twitter.Apps[0].ID == 0 {
+		t.Error("twitter:app:id:ipad parsed incorrectly")
+	}
+
+	if len(p.Twitter.Apps[0].Type) == 0 {
+		t.Error("twitter:app:type:ipad parsed incorrectly")
+	}
+
+	if len(p.Twitter.Apps[0].Name) == 0 {
+		t.Error("twitter:app:name:googleplay parsed incorrectly")
+	}
+
+	if len(p.Twitter.Apps[0].URL) == 0 {
+		t.Error("twitter:app:url:googleplay parsed incorrectly")
+	}
+
+	if p.Twitter.Apps[0].ID == 0 {
+		t.Error("twitter:app:id:googleplay parsed incorrectly")
+	}
+
+	if len(p.Twitter.Apps[0].Type) == 0 {
+		t.Error("twitter:app:type:googleplay parsed incorrectly")
+	}
+
 }

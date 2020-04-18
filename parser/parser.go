@@ -35,6 +35,9 @@ type Parser struct {
 	Article Article `json:"article"`
 	Book    Book    `json:"book"`
 	Profile Profile `json:"profile"`
+
+	// Twitter
+	Twitter Twitter `json:"twitter"`
 }
 
 // New ...
@@ -127,5 +130,12 @@ func (p *Parser) ParseMeta(attrs map[string]string) {
 	// profile
 	case "profile:first_name", "profile:last_name", "profile:username", "profile:gender":
 		p.parseProfileMeta(attrs)
+	// twitter
+	case "twitter:card", "twitter:site", "twitter:site:id", "twitter:creator", "twitter:creator:id",
+		"twitter:description", "twitter:title", "twitter:image", "twitter:image:alt", "twitter:player",
+		"twitter:player:height", "twitter:player:width", "twitter:player:stream", "twitter:app:name:iphone",
+		"twitter:app:url:iphone", "twitter:app:id:iphone", "twitter:app:name:ipad", "twitter:app:url:ipad",
+		"twitter:app:id:ipad", "twitter:app:name:googleplay", "twitter:app:url:googleplay", "twitter:app:id:googleplay":
+		p.parseTwitterMeta(attrs)
 	}
 }
