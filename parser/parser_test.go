@@ -87,6 +87,19 @@ const html = `
 	<meta property="article:tag" content="test" />
 	<meta property="article:tag" content="tes2" />
 
+
+	<!-- book: -->
+	<meta property="book:author" content="book author" />
+	<meta property="book:isbn" content="isbn" />
+	<meta property="book:release_date" content="test" />
+	<meta property="book:tag" content="test" />
+	<meta property="book:tag" content="tes2" />
+
+	<!-- profile: -->
+	<meta property="profile:first_name" content="firstname" />
+	<meta property="profile:last_name" content="lastname" />
+	<meta property="profile:username" content="username" />
+	<meta property="profile:gender" content="male" />
 </head>
 <body>
 </body>
@@ -315,5 +328,47 @@ func TestParserParseHTML(t *testing.T) {
 		if len(p.Article.Authors[0]) == 0 {
 			t.Error("Article Authors Author parsed incorrectly")
 		}
+	}
+
+	// books
+	if len(p.Book.ReleaseDate) == 0 {
+		t.Error("article released_date parsed incorrectly")
+	}
+
+	if len(p.Book.Isbn) == 0 {
+		t.Error("article isbin parsed incorrectly")
+	}
+
+	if len(p.Book.Tags) == 0 {
+		t.Error("Book tags parsed incorrectly")
+	} else {
+		if len(p.Book.Tags[0]) == 0 {
+			t.Error("Book tags tag parsed incorrectly")
+		}
+	}
+
+	if len(p.Book.Authors) == 0 {
+		t.Error("Book Authors parsed incorrectly")
+	} else {
+		if len(p.Book.Authors[0]) == 0 {
+			t.Error("Book Authors Author parsed incorrectly")
+		}
+	}
+
+	// profile
+	if len(p.Profile.FirstName) == 0 {
+		t.Error("profile first_name parsed incorrectly")
+	}
+
+	if len(p.Profile.LastName) == 0 {
+		t.Error("profile last_name parsed incorrectly")
+	}
+
+	if len(p.Profile.Username) == 0 {
+		t.Error("profile username parsed incorrectly")
+	}
+
+	if len(p.Profile.Gender) == 0 {
+		t.Error("profile gender parsed incorrectly")
 	}
 }
