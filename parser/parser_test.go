@@ -1,6 +1,7 @@
 package parser_test
 
 import (
+	"io/ioutil"
 	"strings"
 	"testing"
 
@@ -106,8 +107,8 @@ const html = `
 `
 
 func TestParserParseHTML(t *testing.T) {
-	p := parser.New("")
-	err := p.ParseHTML(strings.NewReader(html))
+	p := parser.New()
+	err := p.ParseHTML(ioutil.NopCloser(strings.NewReader(html)))
 
 	if err != nil {
 		t.Fatal(err)
