@@ -1,5 +1,7 @@
 # go-metaparser
 
+[![Build Status](https://travis-ci.com/ammit/go-metaparser.svg?branch=master)](https://travis-ci.com/ammit/go-metaparser)
+
 > Lightweight metadata scrapper aimed at scrapping Open Graph Metadata from web-pages
 
 ![](https://repository-images.githubusercontent.com/256327777/b9713100-8055-11ea-8d30-ca9ecc6e881b)
