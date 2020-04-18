@@ -1,3 +1,5 @@
+// TODO - The album should be array.
+
 package parser
 
 import (
