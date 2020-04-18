@@ -121,10 +121,10 @@ func (p *Parser) ParseMeta(attrs map[string]string) {
 	case "article:published_time", "article:modified_time", "article:expiration_time", "article:author",
 		"article:section", "article:tag":
 		p.parseArticleMeta(attrs)
-	// article
+	// book
 	case "book:author", "book:isbn", "book:release_date", "book:tag":
 		p.parseBookMeta(attrs)
-		// article
+	// profile
 	case "profile:first_name", "profile:last_name", "profile:username", "profile:gender":
 		p.parseProfileMeta(attrs)
 	}
