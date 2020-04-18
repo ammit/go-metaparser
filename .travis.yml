@@ -8,7 +8,7 @@ language: go
 # LINTER_VERSION is the version of golangci-lint. See current releases
 # here:
 #   https://github.com/golangci/golangci-lint/releases
-env: GO111MODULE=on GOFLAGS='-mod vendor'
+env: GO111MODULE=on
 
 # You don't need to test on very old versions of the Go compiler. It's the user's
 # responsibility to keep their compiler up to date.
