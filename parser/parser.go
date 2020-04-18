@@ -26,6 +26,9 @@ type Parser struct {
 	Images []*Image `json:"images"`
 	Videos []*Video `json:"videos"`
 	Audios []*Audio `json:"audios"`
+
+	// New
+	Music Music `json:"music"`
 }
 
 // New ...
@@ -108,6 +111,9 @@ func (p *Parser) ParseMeta(attrs map[string]string) {
 	// opengraph:audio
 	case "og:audio", "og:audio:secure_url", "og:audio:type":
 		p.parseAudioMeta(attrs)
-
+	// music
+	case "music:musician", "music:album", "music:album:disc", "music:album:track", "music:song",
+		"music:song:disc", "music:song:track", "music:release_date", "music:creator", "music:duration":
+		p.parseMusicMeta(attrs)
 	}
 }

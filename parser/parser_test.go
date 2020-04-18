@@ -51,6 +51,18 @@ const html = `
 	<meta property="og:audio" content="http://example.com/sound.mp3" />
 	<meta property="og:audio:secure_url" content="https://secure.example.com/sound.mp3" />
 	<meta property="og:audio:type" content="audio/mpeg" />
+
+	<!-- (new) music:music/album/musician/playlist/radio_station -->
+	<meta property="music:musician" content="http://open.spotify.com/artist/1dfeR4HaWDbWqFHLkxsg1d">
+	<meta property="music:musician" content="http://open.spotify.com/artist/0oSGxfWSnnOXhD2fKuz2Gy">
+	<meta property="music:album" content="http://open.spotify.com/album/7rq68qYz66mNdPfidhIEFa">
+	<meta property="music:album:track" content="2">
+	<meta property="music:duration" content="236">
+	<meta property="music:release_date" content="2011-04-19">     
+	<meta property="music:song" content="http://open.spotify.com/track/2aSFLiDPreOVP6KHiWk4lF">
+	<meta property="music:song:disc" content="1">
+	<meta property="music:song:track" content="2">
+	<meta property="music:creator" content="http://open.spotify.com/user/austinhaugen"/>
 </head>
 <body>
 </body>
@@ -164,6 +176,48 @@ func TestParserParseHTML(t *testing.T) {
 
 		if len(p.Audios[0].Type) == 0 {
 			t.Error("audio type parsed incorrectly")
+		}
+	}
+
+	// music
+	if len(p.Music.Musicians) == 0 {
+		t.Error("musicians parsed incorrectly")
+	}
+
+	// music.album
+	if len(p.Music.Album.URL) == 0 {
+		t.Error("Music Album URL parsed incorrectly")
+	}
+
+	if p.Music.Album.Track == 0 {
+		t.Error("Music Album Track parsed incorrectly")
+	}
+
+	if p.Music.Duration == 0 {
+		t.Error("Music duration parsed incorrectly")
+	}
+
+	if len(p.Music.ReleaseDate) == 0 {
+		t.Error("Music Release Date parsed incorrectly")
+	}
+
+	if len(p.Music.Creator) == 0 {
+		t.Error("Music creator parsed incorrectly")
+	}
+
+	if len(p.Music.Songs) == 0 {
+		t.Error("Music songs parsed incorrectly")
+	} else {
+		if len(p.Music.Songs[0].URL) == 0 {
+			t.Error("Music song url parsed incorrectly")
+		}
+
+		if p.Music.Songs[0].Disc == 0 {
+			t.Error("Music song disc parsed incorrectly")
+		}
+
+		if p.Music.Songs[0].Track == 0 {
+			t.Error("Music song track parsed incorrectly")
 		}
 	}
 }
