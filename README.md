@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/ammit/go-metaparser.svg?branch=master)](https://travis-ci.com/ammit/go-metaparser)
-# go-metaparser
 
+# go-metaparser
 
 > Lightweight metadata scrapper aimed at scrapping Open Graph Metadata from web-pages
 
@@ -19,6 +19,14 @@ With go-metaparser you can easily extract structured meta-data from websites. Su
 ## Development setup
 
     __TODO__
+
+## Performance
+
+You can run the benchmarks yourself, but here's the output on my machine:
+
+```text
+    BenchmarkParser-12         19024             62147 ns/op            9858 B/op        261 allocs/op
+```
 
 ## Release History
 

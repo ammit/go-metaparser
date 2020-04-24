@@ -501,3 +501,12 @@ func TestParserParseHTML(t *testing.T) {
 	}
 
 }
+
+func BenchmarkParser(b *testing.B) {
+	p := parser.New()
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		_ = p.ParseHTML(ioutil.NopCloser(strings.NewReader(html)))
+	}
+}
