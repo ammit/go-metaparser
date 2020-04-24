@@ -2,23 +2,59 @@
 
 # go-metaparser
 
-> Lightweight metadata scrapper aimed at scrapping Open Graph Metadata from web-pages
+> Lightweight metadata parser written in Go
 
 ![](https://repository-images.githubusercontent.com/256327777/b9713100-8055-11ea-8d30-ca9ecc6e881b)
 
-With go-metaparser you can easily extract structured meta-data from websites. Supports extracting Open Graph Metadata from any webpage.
+With go-metaparser you can easily extract structured meta-data from websites. Supports extracting Open Graph Metadata, Twitter card data from any webpage.
 
 ## Installation
 
-    __TODO__
+Install the package with:
+
+```go
+go get github.com/ammit/go-metaparser
+```
+
+Import it with:
+
+```go
+import "github.com/ammit/go-metaparser"
+```
+
+and use parser as the package name inside the code.
 
 ## Usage example
 
-    __TODO__
+Please check the example folder for details.
 
-## Development setup
+```go
+package main
 
-    __TODO__
+import (
+	"fmt"
+
+	parser "github.com/ammit/go-metaparser"
+)
+
+const (
+	url = "http://ogp.me"
+)
+
+func main() {
+	p := parser.New()
+	b, err := p.FetchHTML(url)
+	if err != nil {
+		fmt.Printf("Could not fetch html from given url: %v \n", url)
+	}
+	defer b.Close()
+
+	err = p.ParseHTML(b)
+
+	fmt.Printf("The parsed title is: %v \n", p.Title)
+}
+
+```
 
 ## Performance
 
@@ -28,14 +64,10 @@ You can run the benchmarks yourself, but here's the output on my machine:
     BenchmarkParser-12         19024             62147 ns/op            9858 B/op        261 allocs/op
 ```
 
-## Release History
-
-    __TODO__
-
 ## Contributing
 
 1. Fork it (<https://github.com/ammit/go-metaparser/fork>)
 2. Create your feature branch (`git checkout -b feature/fooBar`)
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
-5. Create a new Pull Request
+5. Create a new Pull Request :)
