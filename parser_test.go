@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ammit/go-metaparser/parser"
+	parser "github.com/ammit/go-metaparser"
 )
 
 const html = `
