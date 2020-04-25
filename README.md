@@ -6,7 +6,9 @@
 
 ![](https://repository-images.githubusercontent.com/256327777/b9713100-8055-11ea-8d30-ca9ecc6e881b)
 
-With go-metaparser you can easily extract structured meta-data from websites. Supports extracting Open Graph Metadata, Twitter card data from any webpage.
+With go-metaparser, you can easily extract structured meta-data from HTML. The purpose of this library is to be able to obtain all types of metadata from the web page.
+
+Currently, it supports Open Graph, Twitter Card Metadata and some general metadata that doesn't belong to a particular type, for example - title, description etc.
 
 ## Installation
 
