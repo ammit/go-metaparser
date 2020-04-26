@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/ammit/go-metaparser.svg?branch=master)](https://travis-ci.com/ammit/go-metaparser)
+[![Build Status](https://travis-ci.com/ammit/go-metaparser.svg?branch=master)](https://travis-ci.com/ammit/go-metaparser) [![Go Report Card](https://goreportcard.com/badge/github.com/ammit/go-metaparser)](https://goreportcard.com/report/github.com/ammit/go-metaparser)
 
 # go-metaparser
 
