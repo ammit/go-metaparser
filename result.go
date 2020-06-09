@@ -20,6 +20,8 @@ type Result struct {
 	Book    Book    `json:"book"`
 	Profile Profile `json:"profile"`
 
+	Favicons []*Favicon `json:"favicons"`
+
 	// Twitter
 	Twitter Twitter `json:"twitter"`
 }

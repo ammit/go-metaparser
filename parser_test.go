@@ -19,6 +19,7 @@ const html = `
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="manifest" href="site.webmanifest">
 	<link rel="apple-touch-icon" href="icon.png">
+	<link rel="icon" type="image/svg+xml" href="https://example.com/icon.svg">
 	<link rel="stylesheet" href="css/normalize.css">
 	<link rel="stylesheet" href="css/main.css">
 
@@ -500,6 +501,17 @@ func TestParserParseHTML(t *testing.T) {
 		t.Error("twitter:app:type:googleplay parsed incorrectly")
 	}
 
+	if len(p.Favicons) != 2 {
+		t.Error("Favicons parsed incorrectly")
+	}
+
+	if p.Favicons[0].URL != "icon.png" {
+		t.Error("Favion URL parsed incorrectly")
+	}
+
+	if p.Favicons[1].Type != "image/svg+xml" {
+		t.Error("Favicon type parsed incorrectly")
+	}
 }
 
 func BenchmarkParser(b *testing.B) {
