@@ -17,27 +17,7 @@ const (
 
 // Parser ...
 type Parser struct {
-	Title            string   `json:"title"`
-	Type             string   `json:"type"`
-	Description      string   `json:"description"`
-	Determiner       string   `json:"determiner"`
-	URL              string   `json:"url"`
-	Locale           string   `json:"locale"`
-	LocalesAlternate []string `json:"locales_alternate"`
-	SiteName         string   `json:"site_name"`
-
-	Images []*Image `json:"images"`
-	Videos []*Video `json:"videos"`
-	Audios []*Audio `json:"audios"`
-
-	// New
-	Music   Music   `json:"music"`
-	Article Article `json:"article"`
-	Book    Book    `json:"book"`
-	Profile Profile `json:"profile"`
-
-	// Twitter
-	Twitter Twitter `json:"twitter"`
+	Result
 }
 
 // New ...
@@ -66,6 +46,37 @@ func fetch(target string) (io.ReadCloser, error) {
 	}
 
 	return resp.Body, nil
+}
+
+// ParseHTMLWithResult parses given html and returns a Result
+func (p *Parser) ParseHTMLWithResult(buffer io.ReadCloser) (*Result, error) {
+	err := p.ParseHTML(buffer)
+	if err == nil {
+		result := &Result{
+			Title:            p.Title,
+			Type:             p.Type,
+			Description:      p.Description,
+			Determiner:       p.Determiner,
+			URL:              p.URL,
+			Locale:           p.Locale,
+			LocalesAlternate: p.LocalesAlternate,
+			SiteName:         p.SiteName,
+
+			Images: p.Images,
+			Videos: p.Videos,
+			Audios: p.Audios,
+
+			Music:   p.Music,
+			Article: p.Article,
+			Book:    p.Book,
+			Profile: p.Profile,
+
+			Twitter: p.Twitter,
+		}
+		return result, nil
+	} else {
+		return nil, err
+	}
 }
 
 // ParseHTML parses given html
