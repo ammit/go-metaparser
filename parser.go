@@ -71,6 +71,8 @@ func (p *Parser) ParseHTMLWithResult(buffer io.ReadCloser) (*Result, error) {
 			Book:    p.Book,
 			Profile: p.Profile,
 
+			Favicons: p.Favicons,
+
 			Twitter: p.Twitter,
 		}
 		return result, nil
@@ -97,18 +99,30 @@ func (p *Parser) ParseHTML(buffer io.ReadCloser) error {
 			if atom.Lookup(name) == atom.Body {
 				return nil
 			}
-			if atom.Lookup(name) != atom.Meta || !hasAttr {
+			if atom.Lookup(name) == atom.Meta && hasAttr {
+				attrs := getAttributes(z)
+				p.ParseMeta(attrs)
+			} else if atom.Lookup(name) == atom.Link && hasAttr {
+				attrs := getAttributes(z)
+				p.ParseLink(attrs)
+			} else {
 				continue
 			}
-			m := make(map[string]string)
-			var key, val []byte
-			for hasAttr {
-				key, val, hasAttr = z.TagAttr()
-				m[atom.String(key)] = string(val)
-			}
-			p.ParseMeta(m)
+
 		}
 	}
+}
+
+func getAttributes(z *html.Tokenizer) map[string]string {
+	m := make(map[string]string)
+	var key, val []byte
+	// Must be true because of the previous if
+	hasAttr := true
+	for hasAttr {
+		key, val, hasAttr = z.TagAttr()
+		m[atom.String(key)] = string(val)
+	}
+	return m
 }
 
 // ParseMeta processes meta attributes
@@ -148,5 +162,13 @@ func (p *Parser) ParseMeta(attrs map[string]string) {
 		"twitter:app:url:iphone", "twitter:app:id:iphone", "twitter:app:name:ipad", "twitter:app:url:ipad",
 		"twitter:app:id:ipad", "twitter:app:name:googleplay", "twitter:app:url:googleplay", "twitter:app:id:googleplay":
 		p.parseTwitterMeta(attrs)
+	}
+}
+
+func (p *Parser) ParseLink(attrs map[string]string) {
+	// Not using a switch/case because there is too much variation in naming the favicon
+	// but it often includes 'icon' in the rel attribute
+	if strings.Contains(attrs["rel"], "icon") {
+		p.parseFaviconLink(attrs)
 	}
 }
