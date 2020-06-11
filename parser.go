@@ -53,14 +53,9 @@ func (p *Parser) ParseHTMLWithResult(buffer io.ReadCloser) (*Result, error) {
 	err := p.ParseHTML(buffer)
 	if err == nil {
 		result := &Result{
-			Title:            p.Title,
-			Type:             p.Type,
-			Description:      p.Description,
-			Determiner:       p.Determiner,
-			URL:              p.URL,
-			Locale:           p.Locale,
-			LocalesAlternate: p.LocalesAlternate,
-			SiteName:         p.SiteName,
+			Title:       p.Title,
+			Description: p.Description,
+			OpenGraph:   p.OpenGraph,
 
 			Images: p.Images,
 			Videos: p.Videos,
@@ -86,6 +81,7 @@ func (p *Parser) ParseHTML(buffer io.ReadCloser) error {
 	defer buffer.Close()
 
 	z := html.NewTokenizer(buffer)
+	extractTitle := false
 	for {
 		token := z.Next()
 		switch token {
@@ -94,21 +90,41 @@ func (p *Parser) ParseHTML(buffer io.ReadCloser) error {
 				return nil
 			}
 			return z.Err()
+		case html.TextToken:
+			// Text cannot be extract from the tag so it must extracted here
+			// extractTitle acts as a flag which is set true on opening title tag and false on closing title tag
+			if extractTitle {
+				p.Title = string(z.Text())
+			}
 		case html.StartTagToken, html.SelfClosingTagToken, html.EndTagToken:
 			name, hasAttr := z.TagName()
 			if atom.Lookup(name) == atom.Body {
 				return nil
 			}
-			if atom.Lookup(name) == atom.Meta && hasAttr {
+			if hasAttr {
 				attrs := getAttributes(z)
-				p.ParseMeta(attrs)
-			} else if atom.Lookup(name) == atom.Link && hasAttr {
-				attrs := getAttributes(z)
-				p.ParseLink(attrs)
+				if atom.Lookup(name) == atom.Meta {
+					// Parse HTML meta tag
+					if _, ok := attrs["property"]; ok {
+						// tag with <meta property="..." content="..." ...>
+						p.ParseMetaProperty(attrs)
+					} else if name, ok := attrs["name"]; ok {
+						// Description meta tag
+						if name == "description" {
+							p.Description = attrs["content"]
+						}
+					}
+				} else if atom.Lookup(name) == atom.Link {
+					p.ParseLink(attrs)
+				} else {
+					continue
+				}
+			} else if atom.Lookup(name) == atom.Title {
+				// Toggle title parsing
+				extractTitle = !extractTitle
 			} else {
 				continue
 			}
-
 		}
 	}
 }
@@ -125,12 +141,12 @@ func getAttributes(z *html.Tokenizer) map[string]string {
 	return m
 }
 
-// ParseMeta processes meta attributes
-func (p *Parser) ParseMeta(attrs map[string]string) {
+// ParseMetaProperty processes meta attributes
+func (p *Parser) ParseMetaProperty(attrs map[string]string) {
 	switch attrs["property"] {
 	// opengraph:basic
 	case "og:title", "og:type", "og:url", "og:description", "og:determiner", "og:locale", "og:locale:alternate", "og:site_name":
-		p.parseBasicMeta(attrs)
+		p.parseBasicOGMeta(attrs)
 	// opengraph:image
 	case "og:image", "og:image:url", "og:image:secure_url", "og:image:type", "og:image:width", "og:image:height", "og:image:alt":
 		p.parseImageMeta(attrs)
