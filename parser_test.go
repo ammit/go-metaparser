@@ -139,35 +139,43 @@ func TestParserParseHTML(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if p.Title != "sample title" {
+	if p.Title != "Go Meta Parser" {
 		t.Error("title parsed incorrectly")
 	}
 
-	if p.Description != "sample description" {
+	if p.Description != "Go Meta Description" {
 		t.Error("description parsed incorrectly")
 	}
 
-	if p.Determiner != "determiner" {
+	if p.OpenGraph.Title != "sample title" {
+		t.Error("Open Graph title parsed incorrectly")
+	}
+
+	if p.OpenGraph.Description != "sample description" {
+		t.Error("Open Graph description parsed incorrectly")
+	}
+
+	if p.OpenGraph.Determiner != "determiner" {
 		t.Error("determiner parsed incorrectly")
 	}
 
-	if p.Type != "demo" {
+	if p.OpenGraph.Type != "demo" {
 		t.Error("type parsed incorrectly")
 	}
 
-	if p.URL != "http://example.com" {
+	if p.OpenGraph.URL != "http://example.com" {
 		t.Error("url parsed incorrectly")
 	}
 
-	if p.Locale != "en_GB" {
+	if p.OpenGraph.Locale != "en_GB" {
 		t.Error("locale parsed incorrectly")
 	}
 
-	if len(p.LocalesAlternate) == 0 {
+	if len(p.OpenGraph.LocalesAlternate) == 0 {
 		t.Error("locales_alternate parsed incorrectly")
 	}
 
-	if p.SiteName != "sample site_name" {
+	if p.OpenGraph.SiteName != "sample site_name" {
 		t.Error("site_name parsed incorrectly")
 	}
 
@@ -511,6 +519,22 @@ func TestParserParseHTML(t *testing.T) {
 
 	if p.Favicons[1].Type != "image/svg+xml" {
 		t.Error("Favicon type parsed incorrectly")
+	}
+}
+
+func TestParserParseHTMLWithResult(t *testing.T) {
+	p := parser.New()
+	result, err := p.ParseHTMLWithResult(ioutil.NopCloser(strings.NewReader(html)))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if result.GetTitle() != result.OpenGraph.Title {
+		t.Error("GetTitle does not return correct title")
+	}
+
+	if result.GetDescription() != result.OpenGraph.Description {
+		t.Error("GetDescription does not return correct description")
 	}
 }
 
