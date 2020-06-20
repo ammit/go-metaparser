@@ -131,6 +131,17 @@ const html = `
 </body>
 `
 
+const titleHtml = `
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+	<title id="pageTitle">Go Meta Parser</title>
+</head>
+<body>
+</body>
+`
+
 func TestParserParseHTML(t *testing.T) {
 	p := parser.New()
 	err := p.ParseHTML(ioutil.NopCloser(strings.NewReader(html)))
@@ -535,6 +546,18 @@ func TestParserParseHTMLWithResult(t *testing.T) {
 
 	if result.GetDescription() != result.OpenGraph.Description {
 		t.Error("GetDescription does not return correct description")
+	}
+}
+
+func TestParserParseTitleWithAttribute(t *testing.T) {
+	p := parser.New()
+	result, err := p.ParseHTMLWithResult(ioutil.NopCloser(strings.NewReader(titleHtml)))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if result.GetTitle() != "Go Meta Parser" {
+		t.Error("GetTitle does not return correct title")
 	}
 }
 

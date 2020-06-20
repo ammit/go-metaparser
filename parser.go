@@ -101,7 +101,10 @@ func (p *Parser) ParseHTML(buffer io.ReadCloser) error {
 			if atom.Lookup(name) == atom.Body {
 				return nil
 			}
-			if hasAttr {
+			if atom.Lookup(name) == atom.Title {
+				// Toggle title parsing
+				extractTitle = !extractTitle
+			} else if hasAttr {
 				attrs := getAttributes(z)
 				if atom.Lookup(name) == atom.Meta {
 					// Parse HTML meta tag
@@ -119,9 +122,6 @@ func (p *Parser) ParseHTML(buffer io.ReadCloser) error {
 				} else {
 					continue
 				}
-			} else if atom.Lookup(name) == atom.Title {
-				// Toggle title parsing
-				extractTitle = !extractTitle
 			} else {
 				continue
 			}
